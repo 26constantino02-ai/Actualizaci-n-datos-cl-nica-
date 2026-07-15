@@ -25,7 +25,7 @@ def registro():
         
         conn = sqlite3.connect('clinica.db')
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO pacientes (nombre, cedula, correo, contraseña) VALUES (?, ?, ?)", (nombre, cedula, correo, contraseña_segura))
+        cursor.execute("INSERT INTO pacientes (nombre, cedula, correo, contraseña) VALUES (?, ?, ?, ?)", (nombre, cedula, correo, contraseña_segura))
         conn.commit()
         conn.close()
         
