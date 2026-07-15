@@ -1,2 +1,2 @@
-# Actualizacion-datos-clinica-
+# Actualizacion datos clinica
 Formulario de registro para la clínica 
