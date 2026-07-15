@@ -41,3 +41,19 @@ def buscar_paciente(cedula):
     paciente = cursor.fetchone()
     conn.close()
     return str(paciente) if paciente else "Paciente no encontrado"
+    @app.route('/admin')
+def admin():
+    conn = sqlite3.connect('clinica.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM pacientes ORDER BY id DESC")
+    pacientes = cursor.fetchall()
+    conn.close()
+    
+    html = "<h1 style='text-align:center'>Pacientes Registrados</h1><table border='1' style='width:90%; margin:auto; border-collapse:collapse;'>"
+    html += "<tr><th>ID</th><th>Nombre</th><th>Cédula</th><th>Correo</th></tr>"
+    for p in pacientes:
+        html += f"<tr><td>{p[0]}</td><td>{p[1]}</td><td>{p[2]}</td><td>{p[3]}</td></tr>"
+    html += "</table>"
+    return html
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)
