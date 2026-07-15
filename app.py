@@ -9,6 +9,20 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS pacientes (id INTEGER PRIMARY KEY, 
 conn.commit()
 conn.close()
 
+ESTILO = '''
+<style>
+body{font-family:Arial; background:#f0f4f8; margin:0; padding:20px}
+.caja{max-width:500px; margin:50px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1)}
+h1{color:#0d6efd; text-align:center}
+input{width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:6px; font-size:16px}
+button{width:100%; padding:12px; background:#0d6efd; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer}
+button:hover{background:#0b5ed7}
+table{width:90%; margin:20px auto; border-collapse:collapse; background:white}
+th{background:#0d6efd; color:white; padding:10px}
+td{padding:10px; border:1px solid #ddd; text-align:center}
+</style>
+'''
+
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
@@ -20,8 +34,18 @@ def registro():
         cursor.execute("INSERT INTO pacientes (nombre, cedula, correo, fecha) VALUES (?,?,?, datetime('now'))", (nombre, cedula, correo))
         conn.commit()
         conn.close()
-        return "Datos guardados correctamente"
-    return render_template_string('''<form method="post">Nombre: <input name="nombre"><br>Cedula: <input name="cedula"><br>Correo: <input name="correo"><br><input type="submit"></form>''')
+        return ESTILO + "<div class='caja'><h1>✅ Guardado!</h1><p>Datos guardados correctamente</p><a href='/registro'>Registrar otro</a></div>"
+    
+    return ESTILO + '''
+    <div class="caja">
+    <h1>Registro Clínica</h1>
+    <form method="post">
+    <label>Nombre:</label><input name="nombre" required>
+    <label>Cedula:</label><input name="cedula" required>
+    <label>Correo:</label><input name="correo" type="email" required>
+    <button type="submit">Enviar</button>
+    </form>
+    </div>'''
 
 @app.route('/buscar/<cedula>')
 def buscar_paciente(cedula):
@@ -42,12 +66,6 @@ def admin():
     cursor.execute("SELECT * FROM pacientes ORDER BY id DESC")
     pacientes = cursor.fetchall()
     conn.close()
-    html = "<h1 style='text-align:center'>Pacientes Registrados</h1><table border='1' style='width:90%; margin:auto; border-collapse:collapse;'>"
-    html += "<tr><th>ID</th><th>Nombre</th><th>Cedula</th><th>Correo</th><th>Fecha</th></tr>"
-    for p in pacientes:
-        html += f"<tr><td>{p[0]}</td><td>{p[1]}</td><td>{p[2]}</td><td>{p[3]}</td><td>{p[4]}</td></tr>"
-    html += "</table>"
-    return html
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    
+    filas = ""
+    for
