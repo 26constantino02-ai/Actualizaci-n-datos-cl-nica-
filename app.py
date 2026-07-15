@@ -3,13 +3,13 @@ import sqlite3
 
 app = Flask(__name__)
 
-conn = sqlite3.connect('clinica.db')
+conn = sqlite3.connect("clinica.db")
 cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS pacientes (id INTEGER PRIMARY KEY, nombre TEXT, cedula TEXT, correo TEXT, fecha TEXT)''')
 conn.commit()
 conn.close()
 
-ESTILO = '''
+ESTILO = """
 <style>
 body{font-family:Arial; background:#f0f4f8; margin:0; padding:20px}
 .caja{max-width:500px; margin:50px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1)}
@@ -21,22 +21,22 @@ table{width:90%; margin:20px auto; border-collapse:collapse; background:white}
 th{background:#0d6efd; color:white; padding:10px}
 td{padding:10px; border:1px solid #ddd; text-align:center}
 </style>
-'''
+"""
 
-@app.route('/registro', methods=['GET', 'POST'])
+@app.route("/registro", methods=["GET", "POST"])
 def registro():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        cedula = request.form['cedula']
-        correo = request.form['correo']
-        conn = sqlite3.connect('clinica.db')
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        cedula = request.form["cedula"]
+        correo = request.form["correo"]
+        conn = sqlite3.connect("clinica.db")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO pacientes (nombre, cedula, correo, fecha) VALUES (?,?,?, datetime('now'))", (nombre, cedula, correo))
         conn.commit()
         conn.close()
         return ESTILO + "<div class='caja'><h1>✅ Guardado!</h1><p>Datos guardados correctamente</p><a href='/registro'>Registrar otro</a></div>"
     
-    return ESTILO + '''
+    return ESTILO + """
     <div class="caja">
     <h1>Registro Clínica</h1>
     <form method="post">
@@ -45,11 +45,11 @@ def registro():
     <label>Correo:</label><input name="correo" type="email" required>
     <button type="submit">Enviar</button>
     </form>
-    </div>'''
+    </div>"""
 
-@app.route('/buscar/<cedula>')
+@app.route("/buscar/<cedula>")
 def buscar_paciente(cedula):
-    conn = sqlite3.connect('clinica.db')
+    conn = sqlite3.connect("clinica.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM pacientes WHERE cedula=?", (cedula,))
     paciente = cursor.fetchone()
@@ -59,13 +59,19 @@ def buscar_paciente(cedula):
     else:
         return "Paciente no encontrado"
 
-@app.route('/admin')
+@app.route("/admin")
 def admin():
-    conn = sqlite3.connect('clinica.db')
+    conn = sqlite3.connect("clinica.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM pacientes ORDER BY id DESC")
     pacientes = cursor.fetchall()
     conn.close()
     
     filas = ""
-    for
+    for p in pacientes:
+        filas += f"<tr><td>{p[0]}</td><td>{p[1]}</td><td>{p[2]}</td><td>{p[3]}</td><td>{p[4]}</td></tr>"
+    
+    return ESTILO + f"<h1>Pacientes Registrados</h1><table><tr><th>ID</th><th>Nombre</th><th>Cedula</th><th>Correo</th><th>Fecha</th></tr>{filas}</table>"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
